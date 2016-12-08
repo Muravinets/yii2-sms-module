@@ -1,0 +1,28 @@
+{
+    "name": "ihacklog/yii2-sms-module",
+    "description": "短信组件模块",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"],
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "荒野無燈",
+            "email": "askme@my.blog",
+            "homepage": "https://github.com/ihacklog/yii2-sms-module",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "http://pm.qian100.com/redmine/projects/yii2d",
+        "source": "git@202.104.102.9:ihacklog/yii2-sms-module.git"
+    },
+    "require": {
+        "yiisoft/yii2": "*",
+        "ihacklog/yii2-sms": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "ihacklog\\sms\\": ""
+        }
+    }
+}
