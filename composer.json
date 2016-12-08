@@ -13,8 +13,8 @@
         }
     ],
     "support": {
-        "issues": "http://pm.qian100.com/redmine/projects/yii2d",
-        "source": "git@202.104.102.9:ihacklog/yii2-sms-module.git"
+        "issues": "https://github.com/ihacklog/yii2-sms-module",
+        "source": "https://github.com/ihacklog/yii2-sms-module"
     },
     "require": {
         "yiisoft/yii2": "*",
