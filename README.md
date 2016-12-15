@@ -5,6 +5,7 @@ module config:
 ```php
     'modules' => [
         'sms' => [
+            'class' => 'ihacklog\sms\Module',
             'userModelClass' => '\common\models\User', // optional. your User model. Needs to be ActiveRecord.
             'resendTimeSpan' => 10, //重发时间间隔(单位：秒）
             'singleIpTimeSpan' => 0, //单个ip用于统计允许发送的最多次数的限定时间
