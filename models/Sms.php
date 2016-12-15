@@ -3,28 +3,30 @@
 namespace ihacklog\sms\models;
 
 use Yii;
-use vova07\users\models\User;
+use yii\db\ActiveRecord;
+use common\models\User;
 use ihacklog\sms\components\traits\ModuleTrait;
 
 /**
- * This is the model class for table "yii2d_sms".
+ * This is the model class for table "sms".
  *
  * @property integer $id
- * @property integer $channel_type
- * @property integer $template_id
- * @property string $mobile
- * @property string $content
- * @property string $device_id
- * @property string $verify_code
- * @property integer $verify_result
- * @property integer $send_status
- * @property string $error_msg
- * @property integer $client_ip
+ * @property integer $channel_type 通道类型//（1验证码通道，2 通知类短信通道）
+ * @property integer $code_type 业务类型
+ * @property integer $template_id 模板id
+ * @property string $mobile 接收方手机号
+ * @property string $content 短信内容
+ * @property string $device_id 设备ID号//（WEB端发起的填写web）
+ * @property string $verify_code 校验码内容
+ * @property integer $verify_result 短信校验结果//（0,未校验，1成功，2失败）针对校验类短信
+ * @property integer $send_status 发送状态//0未发送，1发送成功，2发送失败
+ * @property string $error_msg 短信发送错误代码信息记录
+ * @property integer $client_ip 客户端IPv4 地址
+ * @property string $provider 服务商名称
  * @property integer $created_at
  * @property integer $updated_at
- * @property string $provider
  */
-class Sms extends \yii\db\ActiveRecord
+class Sms extends ActiveRecord
 {
 
     use ModuleTrait;
@@ -52,6 +54,12 @@ class Sms extends \yii\db\ActiveRecord
 
     public $templateVars;
 
+    public function init()
+    {
+        $this->channel_type = self::CHANNEL_TYPE_VERIFY;
+        $this->device_id = 'web';
+    }
+
     /**
      * @inheritdoc
      */
@@ -67,7 +75,7 @@ class Sms extends \yii\db\ActiveRecord
     {
         return [
             [['mobile'], 'required'],
-            [['id', 'channel_type', 'template_id', 'verify_result', 'send_status', 'client_ip', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'channel_type', 'code_type', 'template_id', 'verify_result', 'send_status', 'client_ip', 'created_at', 'updated_at'], 'integer'],
             [['mobile', 'provider'], 'string', 'max' => 20],
             [['content'], 'string', 'max' => 1024],
             [['device_id'], 'string', 'max' => 30],
@@ -107,6 +115,7 @@ class Sms extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'channel_type' => '通道类型（1验证码通道，2 通知类短信通道）',
+            'code_type' => '业务类型',
             'template_id' => '短信模板代号(0注册会员, 1密码找回, 2修改密码, 3修改手机, 4发送新手机验证码, 5提现)',
             'mobile' => '接收方手机号',
             'content' => '短信内容',
@@ -116,9 +125,9 @@ class Sms extends \yii\db\ActiveRecord
             'send_status' => '发送状态：0未发送，1发送成功，2发送失败',
             'error_msg' => '短信发送错误代码信息记录',
             'client_ip' => '客户端IPv4 地址',
+            'provider' => '服务商名称',
             'created_at' => '创建时间 ',
             'updated_at' => '状态更新时间',
-            'provider' => '服务商名称',
         ];
     }
 
@@ -132,14 +141,14 @@ class Sms extends \yii\db\ActiveRecord
 
     /**
      * 添加一行短信发送任务
-     * 发送短信(附带数据库记录操作)
-     * @TODO 同一IP多次发送检测 ， 同一客户端多次重复请求检测， 黑名单检测
-     * @param mixed $data
-     * @return 主键id或false
-     *
-     * @return void
+     *  @TODO 同一IP多次发送检测 ， 同一客户端多次重复请求检测， 黑名单检测
+     * @param $mobile
+     * @param $content
+     * @param string $veriyCode
+     * @param $errorMsg
+     * @return mixed 主键id或false
      */
-    public function send($channelType, $mobile, $content, $veriyCode = '', &$errorMsg)
+    public function send($mobile, $content, $veriyCode = '', &$errorMsg)
     {
         $module = $this->getModule();
         //防恶意请求
@@ -175,11 +184,10 @@ class Sms extends \yii\db\ActiveRecord
         return false;
     }
 
-    public function addTask($mobile, $content, $veriyCode = '', $channelType = self::CHANNEL_TYPE_NOTICE, $device_id = 'web')
+    public function addTask($mobile, $content, $veriyCode = '')
     {
         $id = self::makeOrderId();
         $this->id           = $id;
-        $this->channel_type = $channelType;
         $this->mobile = $mobile;
         $this->content = $content;
         $this->verify_code = $veriyCode;
@@ -195,13 +203,11 @@ class Sms extends \yii\db\ActiveRecord
         return date('YmdHis') . mt_rand(1000,9999);
     }
 
-
     /**
      * 统计指定ip,在规定的时间内发送成功的短信条数(只计算发送成功的)
-     *
-     * @param mixed $ip
-     * @param int $timeBefore
-     * @return int
+     * @param $ip
+     * @param int $timeLimit
+     * @return int|string
      */
     public function countByIp($ip, $timeLimit = 3600) {
         //当前时间与发送时间之间的间隔小于 $timeLimit
@@ -234,7 +240,6 @@ class Sms extends \yii\db\ActiveRecord
     /**
      * 更新发送状态
      *
-     * @param mixed $id
      * @param mixed $st
      * @param string $msg
      * @return void
@@ -248,7 +253,6 @@ class Sms extends \yii\db\ActiveRecord
     /**
      * 更新验证状态
      *
-     * @param mixed $id
      * @param mixed $st
      * @return void
      */
@@ -260,20 +264,19 @@ class Sms extends \yii\db\ActiveRecord
 
     /**
      * 执行短信发送
-     *
-     * @param mixed $mobile
-     * @param mixed $content
-     * @param mixed $spName
-     * @param mixed $spConf
-     * @param string $bwEn BWEnable ,  BWDisable
-     * @return void
+     * @param $mobile
+     * @param $content
+     * @param $errorMsg
+     * @return bool
      */
-    public static function doSend($mobile, $content, &$errorMsg, $configId = 'sms', $bwEn = 'BWEnable') {
-        $sms = Yii::$app->{$configId};
-        'BWEnable' == $bwEn && $sms->enableBlacklist();
+    public static function doSend($mobile, $content, &$errorMsg) {
+        $sms = Yii::$app->sms;
         $smsSendRs = $sms->send($mobile, $content);
         if (false == $smsSendRs) {
             $err_arr = $sms->getLastError();
+            if (is_array($content)) {
+                $content = json_encode($content);
+            }
             $err_msg = 'sms_send_failed: sp:'. $sms->provider . ', to:'.  $mobile . ', content: '. $content .
                 ', sp_error_msg: '. $err_arr['msg'];
             $errorMsg = $err_msg;
@@ -286,8 +289,9 @@ class Sms extends \yii\db\ActiveRecord
 
     /**
      * 发送短信(验证码之类的)
-     *
-     * @return void
+     * @param $mobile
+     * @param string | array $verifyCode
+     * @return mixed
      */
     public function sendVerify($mobile, $verifyCode = '')
     {
@@ -298,11 +302,13 @@ class Sms extends \yii\db\ActiveRecord
 
     /**
      * 通知类短信发送
-     *
-     * @return void
+     * @param $mobile
+     * @param string | array $content
+     * @return mixed
      */
     public function sendNotice($mobile, $content = '') {
-        $rs = self::send(self::CHANNEL_TYPE_NOTICE, $mobile,'', '', $errorMsg);
+        $errorMsg = '';
+        $rs = self::send(self::CHANNEL_TYPE_NOTICE, $mobile,'', $errorMsg);
         if (!$rs) {
             $this->addError('id', $errorMsg);
         }

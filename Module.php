@@ -6,6 +6,8 @@ class Module extends \yii\base\Module
 {
     public $controllerNamespace = 'ihacklog\sms\controllers';
 
+    public $userModelClass = '\common\models\User';
+    
     /**
      * @var int 重发时间间隔(单位：秒）
      */
