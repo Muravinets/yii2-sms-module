@@ -161,7 +161,7 @@ class Sms extends ActiveRecord
      * @param $errorMsg
      * @return mixed 主键id或false
      */
-    public function send($mobile, $content, $veriyCode = '', &$errorMsg)
+    public function send($mobile, $content, $veriyCode = '', $templateId, &$errorMsg)
     {
         $module = $this->getModule();
         //防恶意请求
@@ -183,12 +183,12 @@ class Sms extends ActiveRecord
             }
         }
         //插入发送记录到库中
-        $smsId = $this->addTask($mobile, $content, $veriyCode, 'web');
+        $smsId = $this->addTask($mobile, $content, $veriyCode, $templateId, 'web');
         if (!$smsId) {
             $errorMsg = 'failed to add sms task:' . implode(',', array_values($this->getErrors()));
             return false;
         }
-        $sendRs = $this->doSend($mobile, $content, $errorMsg);
+        $sendRs = $this->doSend($mobile, $content, $templateId, $errorMsg);
         $updateRs = $this->updateSendStatus($sendRs, $errorMsg);
         if (true == $sendRs) {
             return true;
@@ -196,13 +196,14 @@ class Sms extends ActiveRecord
         return false;
     }
 
-    public function addTask($mobile, $content, $veriyCode = '')
+    public function addTask($mobile, $content, $veriyCode = '', $templateId)
     {
         $id = self::makeOrderId();
         $this->id           = $id;
         $this->mobile = $mobile;
         $this->content = is_array($content) ? json_encode($content) : $content;
         $this->verify_code = $veriyCode;
+        $this->template_id = $templateId;
         if ($this->save()) {
             return $id;
         } else {
@@ -286,10 +287,10 @@ class Sms extends ActiveRecord
      * @param $errorMsg
      * @return bool
      */
-    public static function doSend($mobile, $content, &$errorMsg)
+    public static function doSend($mobile, $content, $templateId, &$errorMsg)
     {
         $sms = Yii::$app->sms;
-        $smsSendRs = $sms->send($mobile, $content);
+        $smsSendRs = $sms->setTemplateId($templateId)->send($mobile, $content);
         if (false == $smsSendRs) {
             $err_arr = $sms->getLastError();
             if (is_array($content)) {
@@ -311,7 +312,7 @@ class Sms extends ActiveRecord
      * @param string | array $verifyCode
      * @return mixed
      */
-    public function sendVerify($mobile, $verifyCode = '')
+    public function sendVerify($mobile, $verifyCode = '', $templateId = null)
     {
         $errorMsg = '';
         if ('Yuntongxun' == Yii::$app->sms->provider) {
@@ -319,7 +320,7 @@ class Sms extends ActiveRecord
         } else {
             $content = '';
         }
-        $rs = self::send($mobile, $content, $verifyCode, $errorMsg);
+        $rs = self::send($mobile, $content, $verifyCode, $templateId, $errorMsg);
         return $rs;
     }
 
@@ -329,9 +330,9 @@ class Sms extends ActiveRecord
      * @param string | array $content
      * @return mixed
      */
-    public function sendNotice($mobile, $content = '') {
+    public function sendNotice($mobile, $content = '', $templateId = null) {
         $errorMsg = '';
-        $rs = self::send(self::CHANNEL_TYPE_NOTICE, $mobile,'', $errorMsg);
+        $rs = self::send(self::CHANNEL_TYPE_NOTICE, $mobile,'', $templateId, $errorMsg);
         if (!$rs) {
             $this->addError('id', $errorMsg);
         }
@@ -384,7 +385,7 @@ class Sms extends ActiveRecord
                     $extraArr['{verify_code}'] = $this->verify_code;
                 }
                 //模块替换
-                if ($this->template_id) {
+/*                if ($this->template_id) {
                     $template = SmsTemplate::findOne($this->template_id);
                     $template->parse($extraArr);
                     $user= User::findOne(['mobile' => $this->mobile]);
@@ -399,7 +400,8 @@ class Sms extends ActiveRecord
                     $this->content = $content;
                 } else {
                     $this->content = '您的验证码为: '. $this->verify_code;
-                }
+                }*/
+                $this->content = '您的验证码为: '. $this->verify_code;
                 $this->provider = Yii::$app->sms->provider;
             }
             return true;
