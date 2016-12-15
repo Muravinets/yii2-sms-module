@@ -23,6 +23,18 @@ class BaseSms extends Component
 
     protected $_error = [];
 
+
+    public function setTemplateId($templateId = null)
+    {
+        $this->templateId = $templateId;
+        return $this;
+    }
+
+    public function getTemplateId() {
+        return $this->templateId;
+    }
+
+
     public function addErrMsg($code, $msg)
     {
         $this->_error[] = array(

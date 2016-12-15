@@ -11,10 +11,11 @@ namespace ihacklog\sms;
 
 interface ISms
 {
-    public function setTemplateId();
-
     /**
-     * 抽象方法： 发送短信
+     * 发送短信
+     * @param $mobile
+     * @param $content
+     * @return mixed
      */
     public function send($mobile, $content);
 }//end class

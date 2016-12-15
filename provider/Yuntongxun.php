@@ -25,11 +25,6 @@ class Yuntongxun extends BaseSms implements ISms
 
     public $softVersion;
 
-    public function setTemplateId()
-    {
-        return false;
-    }
-
     /**
      * @param $mobile 短信接收彿手机号码集合,用英文逗号分开
      * @param $data array 内容数据

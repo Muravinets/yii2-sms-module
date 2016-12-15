@@ -71,6 +71,12 @@ class Sms extends Component
         return $this;
     }
 
+    public function getTemplateId()
+    {
+        $provider = $this->provider;
+        return $this->services[$provider]->getTemplateId();
+    }
+
     public function setProvider($provider)
     {
         $this->provider = $provider;
@@ -86,6 +92,9 @@ class Sms extends Component
 
         if (!is_object($this->services[$provider])) {
             $this->services[$provider] = \Yii::createObject($this->services[$provider]);
+        }
+        if (!is_null($this->_templateId)) {
+            $this->services[$provider]->setTemplateId($this->_templateId);
         }
         return $this->services[$provider]->send($mobile, $content);
     }
