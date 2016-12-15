@@ -2,10 +2,8 @@
 
 use yii\helpers\Html;
 use yii\jui\DatePicker;
-use vova07\themes\admin\widgets\Box;
 use yii\grid\ActionColumn;
 use yii\grid\CheckboxColumn;
-//use vova07\themes\admin\widgets\GridView;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -27,6 +25,7 @@ $gridConfig = [
         ],
         'id',
         'mobile',
+        'verify_code',
         [
             'attribute' => 'content',
             'format' => 'html',
@@ -37,28 +36,25 @@ $gridConfig = [
                 );
             }
         ],
-        /*
-        'views',
-
         [
             'attribute' => 'send_status',
             'format' => 'html',
             'value' => function ($model) {
-                $class = ($model->status_id === $model::STATUS_PUBLISHED) ? 'label-success' : 'label-danger';
+                $class = ($model->send_status === $model::SEND_STATUS_SUCC) ? 'label-success' : 'label-danger';
 
-                return '<span class="label ' . $class . '">' . $model->status . '</span>';
+                return '<span class="label ' . $class . '">' . $model->send_status . '</span>';
             },
 
             'filter' => Html::activeDropDownList(
                 $searchModel,
-                'status_id',
-                $statusArray,
+                'send_status',
+                ['0' => '未发送', '1' => '发送成功', '2' => '发送失败'],
                 [
                     'class' => 'form-control',
-                    'prompt' => Module::t('blogs', 'BACKEND_PROMPT_STATUS')
+                    'prompt' => '== 发送状态 =='
                 ]
             )
-        ],*/
+        ],
         [
             'attribute' => 'created_at',
             'format' => ['date', 'php:Y-m-d H:i:s'],
@@ -117,27 +113,16 @@ $actions[] = '{update}';
 $actions[] = '{delete}';
 
 if ($showActions === true) {
-$gridConfig['columns'][] = [
-'class' => ActionColumn::className(),
-'template' => implode(' ', $actions)
-];
+    $gridConfig['columns'][] = [
+        'class' => ActionColumn::className(),
+        'template' => implode(' ', $actions)
+    ];
 }
 
 $boxButtons = !empty($boxButtons) ? implode(' ', $boxButtons) : null;
 ?>
 <div class="row">
     <div class="col-xs-12">
-        <?php  Box::begin(
-            [
-                'title' => $this->title,
-                'bodyOptions' => [
-                    'class' => 'table-responsive'
-                ],
-                'buttonsTemplate' => $boxButtons,
-                'grid' => $gridId
-            ]
-        ); ?>
         <?=  GridView::widget($gridConfig); ?>
-        <?php  Box::end(); ?>
     </div>
 </div>

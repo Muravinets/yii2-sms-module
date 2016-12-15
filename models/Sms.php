@@ -65,7 +65,8 @@ class Sms extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%sms}}';
+//        return '{{%sms}}';
+        return 'sms';
     }
 
     /**
@@ -122,7 +123,7 @@ class Sms extends ActiveRecord
             'device_id' => '设备ID号（WEB端发起的填写web）',
             'verify_code' => '校验码内容',
             'verify_result' => '短信校验结果（0,未校验，1成功，2失败）针对校验类短信',
-            'send_status' => '发送状态：0未发送，1发送成功，2发送失败',
+            'send_status' => '发送状态',
             'error_msg' => '短信发送错误代码信息记录',
             'client_ip' => '客户端IPv4 地址',
             'provider' => '服务商名称',
@@ -170,13 +171,12 @@ class Sms extends ActiveRecord
             }
         }
         //插入发送记录到库中
-        $smsId = $this->addTask($mobile, $content, $veriyCode, $channelType, 'web');
+        $smsId = $this->addTask($mobile, $content, $veriyCode, 'web');
         if (!$smsId) {
             $errorMsg = 'failed to add sms task:' . implode(',', array_values($this->getErrors()));
             return false;
         }
-        $configId = $channelType == self::CHANNEL_TYPE_NOTICE ? 'smsNotice' : 'sms';
-        $sendRs = $this->doSend($this->mobile, $this->content, $errorMsg, $configId, 'BWEnable');
+        $sendRs = $this->doSend($mobile, $content, $errorMsg);
         $updateRs = $this->updateSendStatus($sendRs, $errorMsg);
         if (true == $sendRs) {
             return true;
@@ -189,9 +189,9 @@ class Sms extends ActiveRecord
         $id = self::makeOrderId();
         $this->id           = $id;
         $this->mobile = $mobile;
-        $this->content = $content;
+        $this->content = is_array($content) ? json_encode($content) : $content;
         $this->verify_code = $veriyCode;
-        if($this->save()) {
+        if ($this->save()) {
             return $id;
         } else {
             return false;
@@ -200,7 +200,7 @@ class Sms extends ActiveRecord
 
     public static function makeOrderId()
     {
-        return date('YmdHis') . mt_rand(1000,9999);
+        return date('YmdHis') . mt_rand(1000, 9999);
     }
 
     /**
@@ -209,7 +209,8 @@ class Sms extends ActiveRecord
      * @param int $timeLimit
      * @return int|string
      */
-    public function countByIp($ip, $timeLimit = 3600) {
+    public function countByIp($ip, $timeLimit = 3600)
+    {
         //当前时间与发送时间之间的间隔小于 $timeLimit
         $timeStart = time() - $timeLimit;
         $map = [
@@ -226,12 +227,14 @@ class Sms extends ActiveRecord
      * @param int $timeSpan
      * @return int
      */
-    public function countByTime($mobile, $timeSpan = 60) {
+    public function countByTime($mobile, $timeSpan = 60)
+    {
         $timeStart = time() - $timeSpan;
         return Sms::find()->where(['mobile'=> $mobile])->andWhere(['>', 'created_at', $timeStart])->count();
     }
 
-    public function updateSendStatus($sendRs, $errorMsg) {
+    public function updateSendStatus($sendRs, $errorMsg)
+    {
         $st = false == $sendRs ? self::SEND_STATUS_FAIL : self::SEND_STATUS_SUCC;
         //更新发送结果
         return $this->setSendStatus($st, $errorMsg);
@@ -244,7 +247,8 @@ class Sms extends ActiveRecord
      * @param string $msg
      * @return void
      */
-    public function setSendStatus($st, $msg ='') {
+    public function setSendStatus($st, $msg ='')
+    {
         $this->send_status = $st;
         $this->error_msg = $msg;
         return $this->save(false);
@@ -256,7 +260,8 @@ class Sms extends ActiveRecord
      * @param mixed $st
      * @return void
      */
-    public function setVerifyRs($st) {
+    public function setVerifyRs($st)
+    {
         $this->verify_result = $st;
         $this->updated_at = time();
         return $this->save(false);
@@ -269,11 +274,13 @@ class Sms extends ActiveRecord
      * @param $errorMsg
      * @return bool
      */
-    public static function doSend($mobile, $content, &$errorMsg) {
+    public static function doSend($mobile, $content, &$errorMsg)
+    {
         $sms = Yii::$app->sms;
         $smsSendRs = $sms->send($mobile, $content);
         if (false == $smsSendRs) {
             $err_arr = $sms->getLastError();
+            var_dump($mobile, $err_arr);die();
             if (is_array($content)) {
                 $content = json_encode($content);
             }
@@ -296,7 +303,8 @@ class Sms extends ActiveRecord
     public function sendVerify($mobile, $verifyCode = '')
     {
         $errorMsg = '';
-        $rs = self::send(self::CHANNEL_TYPE_VERIFY, $mobile, '', $verifyCode, $errorMsg);
+        $content = [$verifyCode, 5];
+        $rs = self::send($mobile, $content, $verifyCode, $errorMsg);
         return $rs;
     }
 

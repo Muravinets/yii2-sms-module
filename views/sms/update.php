@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use vova07\themes\admin\widgets\Box;
 
 /* @var $this yii\web\View */
 /* @var $model ihacklog\sms\models\Sms */
@@ -25,19 +24,7 @@ $boxButtons = !empty($boxButtons) ? implode(' ', $boxButtons) : null;
 ?>
 <div class="row">
     <div class="col-sm-12">
-        <?php  $box = Box::begin(
-            [
-                'title' => $this->title,
-                'renderBody' => false,
-                'options' => [
-                    'class' => 'box-success'
-                ],
-                'bodyOptions' => [
-                    'class' => 'table-responsive'
-                ],
-                'buttonsTemplate' => $boxButtons
-            ]
-        );
+        <?php
         echo $this->render(
             '_form',
             [
@@ -47,6 +34,6 @@ $boxButtons = !empty($boxButtons) ? implode(' ', $boxButtons) : null;
                 'channelTypeArr' => $channelTypeArr,
             ]
         );
-        Box::end(); ?>
+?>
     </div>
 </div>
