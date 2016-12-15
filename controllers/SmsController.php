@@ -9,7 +9,6 @@ use ihacklog\sms\models\SmsTemplate;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use company\models\LoginForm;
 
 /**
  * SmsController implements the CRUD actions for Sms model.
