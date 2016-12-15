@@ -4,6 +4,7 @@ namespace ihacklog\sms\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\behaviors\TimestampBehavior;
 use common\models\User;
 use ihacklog\sms\components\traits\ModuleTrait;
 
@@ -65,8 +66,19 @@ class Sms extends ActiveRecord
      */
     public static function tableName()
     {
-//        return '{{%sms}}';
-        return 'sms';
+        return '{{%sms}}';
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => time(),
+            ],
+        ];
     }
 
     /**
@@ -280,7 +292,6 @@ class Sms extends ActiveRecord
         $smsSendRs = $sms->send($mobile, $content);
         if (false == $smsSendRs) {
             $err_arr = $sms->getLastError();
-            var_dump($mobile, $err_arr);die();
             if (is_array($content)) {
                 $content = json_encode($content);
             }
@@ -303,7 +314,11 @@ class Sms extends ActiveRecord
     public function sendVerify($mobile, $verifyCode = '')
     {
         $errorMsg = '';
-        $content = [$verifyCode, 5];
+        if ('Yuntongxun' == Yii::$app->sms->provider) {
+            $content = [$verifyCode, 5];
+        } else {
+            $content = '';
+        }
         $rs = self::send($mobile, $content, $verifyCode, $errorMsg);
         return $rs;
     }
