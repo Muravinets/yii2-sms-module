@@ -1,5 +1,15 @@
 # yii2-sms-module
 
+test
+
+        $sms = new \ihacklog\sms\models\Sms();
+        $code = mt_rand(1000, 9999);
+        var_dump($sms->sendVerify('18812345678', $code, 1));
+        var_dump($sms->getErrors());
+        var_dump($sms->verify('18812345678', $code, 1));
+        die();
+
+
 # yii2-sms component
 
 * author: HuangYeWuDeng
