@@ -16,15 +16,6 @@ use company\models\LoginForm;
  */
 class SmsController extends Controller
 {
-    public function init() {
-        parent::init();
-        $model = new LoginForm();
-        $model->setScenario('login');
-        $model->username = 'webmaster';
-        $model->password = 'webmaster';
-        $model->login();
-    }
-
     public function behaviors()
     {
         return [
