@@ -63,6 +63,8 @@ class Yuntongxun extends BaseSms implements ISms
             ]);
         } catch (TransferException $e) {
             $error = sprintf('class: %s, error: %s', self::className(), $e->getMessage());
+            $this->addErrMsg(500, $error);
+            return false;
         }
         $result = (string)$response->getBody();
         $json = json_decode($result);
