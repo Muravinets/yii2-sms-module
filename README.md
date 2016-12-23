@@ -11,6 +11,7 @@ module config:
             'singleIpTimeSpan' => 0, //单个ip用于统计允许发送的最多次数的限定时间
             'singleIpSendLimit' => 0, //单个ip在限定的时间内允许发送的最多次数
             'verifyTimeout' => 300, //验证码超时(秒)
+            'enableHttpsCertVerify' => true, //是否校验https证书
         ],
 ```
 
