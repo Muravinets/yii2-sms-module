@@ -47,7 +47,11 @@ class Yuntongxun extends BaseSms implements ISms
             'Authorization' => $authen
         ];
         // 发送请求
-        $client = new Client();
+        $options = [];
+        if (!$this->getModule()->enableHttpsCertVerify) {
+            $options = ['verify' => false];
+        }
+        $client = new Client($options);
         try {
             //"{'to':'$to','templateId':'$tempId','appId':'$this->AppId','datas':[".$data."]}";
             $body = [

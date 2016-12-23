@@ -19,12 +19,12 @@ use Yii;
 trait ModuleTrait
 {
     /**
-     * @var \vova07\users\Module|null Module instance
+     * @var \ihacklog\sms\Module|null Module instance
      */
     private $_module;
 
     /**
-     * @return \vova07\users\Module|null Module instance
+     * @return \ihacklog\sms\Module|null Module instance
      */
     public function getModule()
     {

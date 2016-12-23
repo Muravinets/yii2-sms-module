@@ -25,6 +25,11 @@ class Module extends \yii\base\Module
 
     public $verifyTimeout = 300;
 
+    /**
+     * @var bool 是否启用https证书校验
+     */
+    public $enableHttpsCertVerify = true;
+
     public function init()
     {
         parent::init();

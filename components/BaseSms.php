@@ -10,9 +10,12 @@
 namespace ihacklog\sms\components;
 
 use yii\base\Component;
+use ihacklog\sms\components\traits\ModuleTrait;
 
 class BaseSms extends Component
 {
+    use ModuleTrait;
+
     public $apiUrl = '';
 
     public $username = null;
