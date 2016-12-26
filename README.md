@@ -11,7 +11,6 @@ module config:
             'singleIpTimeSpan' => 0, //单个ip用于统计允许发送的最多次数的限定时间
             'singleIpSendLimit' => 0, //单个ip在限定的时间内允许发送的最多次数
             'verifyTimeout' => 300, //验证码超时(秒)
-            'enableHttpsCertVerify' => true, //是否校验https证书
         ],
 ```
 
@@ -59,14 +58,17 @@ edit composer.json, and then add:
             'services' => [
                 //see http://www.yuntongxun.com/member/main
                 'Yuntongxun' => [
-                'class' => 'ihacklog\sms\provider\Yuntongxun',
-                'apiUrl' => 'https://app.cloopen.com:8883',
-                //                  'apiUrl' => 'https://sandboxapp.cloopen.com:8883',
-                'templateId' => 1,
-                'appId' => 'AppID',
-                'accountSid' => 'ACCOUNT SID',
-                'accountToken' => 'AUTH TOKEN',
-                'softVersion' => '2013-12-26',
+                    'class' => 'ihacklog\sms\provider\Yuntongxun',
+                    'apiUrl' => 'https://app.cloopen.com:8883',
+                    //                  'apiUrl' => 'https://sandboxapp.cloopen.com:8883',
+                    'templateId' => 1,
+                    'appId' => 'AppID',
+                    'accountSid' => 'ACCOUNT SID',
+                    'accountToken' => 'AUTH TOKEN',
+                    'softVersion' => '2013-12-26',
+                ],
+                'File' => [
+                    'class' => 'ihacklog\sms\provider\File',
                 ],
             ],
         ],

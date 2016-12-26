@@ -1,14 +1,14 @@
 <?php
+namespace ihacklog\sms\provider;
 
-namespace omnilight\sms\services;
-use omnilight\sms\SmsServiceInterface;
-use yii\base\Component;
+use ihacklog\sms\ISms;
+use ihacklog\sms\components\BaseSms;
 
 
 /**
  * Class File
  */
-class File extends Component implements ISms
+class File extends BaseSms implements ISms
 {
     /**
      * File where sms will be saved
@@ -37,9 +37,6 @@ class File extends Component implements ISms
         ]);
         fwrite($f, $string);
         fclose($f);
-    }
-
-    public function setTemplateId() {
-        return false;
+        return true;
     }
 }
