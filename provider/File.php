@@ -33,7 +33,7 @@ class File extends BaseSms implements ISms
         $string = strtr($this->template, [
             '{date}' => date_create('now')->format('Y-m-d H:M:s'),
             '{phone}' => $phone,
-            '{message}' => $message,
+            '{message}' => is_array($message) ? json_encode($message) : $message,
         ]);
         fwrite($f, $string);
         fclose($f);
