@@ -37,6 +37,23 @@ $gridConfig = [
             }
         ],
         [
+            'attribute' => 'verify_result',
+            'format' => 'html',
+            'value' => function ($model) {
+                $class = ($model->verify_result === $model::SEND_STATUS_FAIL) ? 'label-danger' : ($model->verify_result === $model::VERIFY_RESULT_SUCC) ? 'label-success' : 'label-info';
+                return '<span class="label ' . $class . '">' . $model->verify_result . '</span>';
+            },
+            'filter' => Html::activeDropDownList(
+                $searchModel,
+                'verify_result',
+                ['0' => '未校验', '1' => '校验成功', '2' => '校验失败'],
+                [
+                    'class' => 'form-control',
+                    'prompt' => '== 校验状态 =='
+                ]
+            )
+        ],
+        [
             'attribute' => 'send_status',
             'format' => 'html',
             'value' => function ($model) {
