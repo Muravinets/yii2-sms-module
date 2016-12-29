@@ -356,7 +356,8 @@ class Sms extends ActiveRecord
         if ($found) {
             $id = $found->id;
             if ($found->verify_result == self::VERIFY_RESULT_SUCC) {
-                return true;
+                $this->addError('id', '您的验证码已经被验证过！');
+                return false;
             }
             $found->verify_result = self::VERIFY_RESULT_SUCC;
             $found->updated_at = time();
