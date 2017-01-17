@@ -50,6 +50,8 @@ class Sms extends Component
 
     public $provider = null;
 
+    public $verifyTemplateId = 1;
+
     protected $_templateId = null;
 
     public function init() {
