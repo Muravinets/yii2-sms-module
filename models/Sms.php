@@ -185,7 +185,7 @@ class Sms extends ActiveRecord
         //插入发送记录到库中
         $smsId = $this->addTask($mobile, $content, $veriyCode, $templateId, 'web');
         if (!$smsId) {
-            $errorMsg = 'failed to add sms task:';
+            $errorMsg = 'failed to add sms task:' . implode(',', array_values($this->getErrors()));
             return false;
         }
         $sendRs = $this->doSend($mobile, $content, $templateId, $errorMsg);
@@ -230,7 +230,7 @@ class Sms extends ActiveRecord
             'client_ip'   => $ip,
             'send_status' => self::SEND_STATUS_SUCC,
         ];
-        return Sms::find()->where($map)->andWhere(['>', 'created_at', $timeStart])->count();
+        return static::find()->where($map)->andWhere(['>', 'created_at', $timeStart])->count();
     }
 
     /**
@@ -243,7 +243,7 @@ class Sms extends ActiveRecord
     public function countByTime($mobile, $timeSpan = 60)
     {
         $timeStart = time() - $timeSpan;
-        return Sms::find()->where(['mobile'=> $mobile])->andWhere(['>', 'created_at', $timeStart])->count();
+        return static::find()->where(['mobile'=> $mobile])->andWhere(['>', 'created_at', $timeStart])->count();
     }
 
     public function updateSendStatus($sendRs, $errorMsg)
@@ -352,7 +352,7 @@ class Sms extends ActiveRecord
         //有效时间
         $timeout           = $this->getModule()->verifyTimeout ? $this->getModule()->verifyTimeout : 60*5;
         $startOffset       = time() - $timeout;
-        $found  = Sms::find()->where($map)->andWhere(['>', 'created_at', $startOffset])->one();
+        $found  = static::find()->where($map)->andWhere(['>', 'created_at', $startOffset])->one();
         if ($found) {
             $id = $found->id;
             if ($found->verify_result == self::VERIFY_RESULT_SUCC) {
