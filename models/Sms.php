@@ -156,18 +156,20 @@ class Sms extends ActiveRecord
      * 添加一行短信发送任务
      *  @TODO 同一IP多次发送检测 ， 同一客户端多次重复请求检测， 黑名单检测
      * @param $mobile
-     * @param $content
+     * @param $args
      * @param string $veriyCode
+     * @param $template \ihacklog\sms\components\BaseTemplate
      * @param $errorMsg
      * @return mixed 主键id或false
      */
-    public function send($mobile, $content, $veriyCode = '', $templateId, &$errorMsg)
+    //self::send($mobile, $content, $args[0], $template, $errorMsg);
+    public function send($mobile, $args, $veriyCode = '', $template, &$errorMsg)
     {
         $module = $this->getModule();
         //防恶意请求
         if ($module->resendTimeSpan) {
             if ($this->countByTime($mobile, $module->resendTimeSpan) > 0) {
-                $errorMsg = sprintf('Send too frequently in %d s!', $module->resendTimeSpan);
+                $errorMsg = sprintf('在 %d s 内发送过于频繁!', $module->resendTimeSpan);
                 $this->addError('id', $errorMsg);
                 return false;
             }
@@ -175,7 +177,7 @@ class Sms extends ActiveRecord
         if ($module->singleIpTimeSpan) {
             if ($this->countByIp(sprintf("%u", ip2long(Yii::$app->getRequest()->getUserIP())), $module->singleIpTimeSpan)
                 > $module->singleIpSendLimit) {
-                $errorMsg = sprintf('Send too frequently in %d s for IP: %s!',
+                $errorMsg = sprintf('IP: %s 在 %d s 内发送过于频繁!',
                     $module->singleIpTimeSpan,
                     Yii::$app->getRequest()->getUserIP());
                 $this->addError('id', $errorMsg);
@@ -183,12 +185,15 @@ class Sms extends ActiveRecord
             }
         }
         //插入发送记录到库中
-        $smsId = $this->addTask($mobile, $content, $veriyCode, $templateId, 'web');
+
+        $content = $template->parseTemplate($args);
+        $smsId = $this->addTask($mobile, $content, $veriyCode, $template->id, 'web');
         if (!$smsId) {
-            $errorMsg = 'failed to add sms task:' . implode(',', array_values($this->getErrors()));
+            $errorMsg = 'failed to add sms task:' . implode(',', array_values($this->getFirstErrors()));
             return false;
         }
-        $sendRs = $this->doSend($mobile, $content, $templateId, $errorMsg);
+        $sendRs = $this->doSend($mobile, $args, $template->id, $errorMsg);
+
         $updateRs = $this->updateSendStatus($sendRs, $errorMsg);
         if (true == $sendRs) {
             return true;
@@ -283,20 +288,21 @@ class Sms extends ActiveRecord
     /**
      * 执行短信发送
      * @param $mobile
-     * @param $content
+     * @param $args
      * @param $errorMsg
      * @return bool
      */
-    public static function doSend($mobile, $content, $templateId, &$errorMsg)
+    public function doSend($mobile, $args, $templateId, &$errorMsg)
     {
         $sms = Yii::$app->sms;
-        $smsSendRs = $sms->setTemplateId($templateId)->send($mobile, $content);
+        $smsSendRs = $sms->setTemplateId($templateId)->send($mobile, $args);
         if (false == $smsSendRs) {
             $err_arr = $sms->getLastError();
-            if (is_array($content)) {
-                $content = json_encode($content);
+            $this->addError('id', $err_arr['msg']);
+            if (is_array($args)) {
+                $args = json_encode($args);
             }
-            $err_msg = 'sms_send_failed: sp:'. $sms->provider . ', to:'.  $mobile . ', content: '. $content .
+            $err_msg = 'sms_send_failed: sp:'. $sms->provider . ', to:'.  $mobile . ', templateId: '. $templateId . ', content: '. $args .
                 ', sp_error_msg: '. $err_arr['msg'];
             $errorMsg = $err_msg;
             Yii::getLogger()->log($err_msg, 'notice', 'sms');
@@ -312,38 +318,78 @@ class Sms extends ActiveRecord
      * @param string | array $verifyCode
      * @return mixed
      */
-    public function sendVerify($mobile, $verifyCode = '', $templateId = null)
+
+    /**
+     * @param $mobile
+     * @param $template \ihacklog\sms\components\BaseTemplate
+     * @param $args
+     * @return mixed
+     * @throws \ErrorException
+     */
+    public function sendVerify($mobile, $template)
     {
         $errorMsg = '';
-        if ('Yuntongxun' == Yii::$app->sms->provider) {
-            $content = [$verifyCode, 5];
-        } else {
-            $content = '';
+        if ($template->type != 'verify') {
+            throw new \ErrorException('guys, you get the wrong template type. expected template type is: verify');
         }
-        $rs = self::send($mobile, $content, $verifyCode, $templateId, $errorMsg);
+        $args = func_get_args();
+        $argc = func_num_args();
+        $argcNeeded = $template->varNum;
+        if (($argc - 2) != $argcNeeded) {
+            throw new \ErrorException('guys, you get the wrong argc. expected template argc is: '. $argcNeeded);
+        }
+        //shift $mobile
+        array_shift($args);
+        //shift $template
+        array_shift($args);
+        $verifyCode = $args[0];
+        if (!is_numeric($verifyCode)) {
+            throw new \ErrorException('error args. first param of args must be verifyCode!');
+        }
+        $rs = self::send($mobile, $args, $verifyCode, $template, $errorMsg);
         return $rs;
     }
 
     /**
      * 通知类短信发送
      * @param $mobile
-     * @param string | array $content
+     * @param string | array $args
      * @return mixed
+     * @throws \ErrorException
      */
-    public function sendNotice($mobile, $content = '', $templateId = null) {
+    public function sendNotice($mobile, $template) {
         $errorMsg = '';
-        $rs = self::send($mobile, $content, '', $templateId, $errorMsg);
+        if ($template->type != 'notice') {
+            throw new \ErrorException('guys, you get the wrong template type. expected template type is: notice');
+        }
+        $args = func_get_args();
+        $argc = func_num_args();
+        $argcNeeded = $template->varNum;
+        if (($argc - 2) != $argcNeeded) {
+            throw new \ErrorException('guys, you get the wrong argc. expected template argc is: '. $argcNeeded);
+        }
+        //shift $mobile
+        array_shift($args);
+        //shift $template
+        array_shift($args);
+        $rs = self::send($mobile, $args, '', $template, $errorMsg);
         if (!$rs) {
             $this->addError('id', $errorMsg);
         }
         return $rs;
     }
 
-    public function verify($mobile, $verifyCode, $templateId) {
+    /**
+     * @param $mobile
+     * @param $verifyCode
+     * @param $template \ihacklog\sms\components\BaseTemplate
+     * @return bool
+     */
+    public function verify($mobile, $verifyCode, $template) {
         $map = array(
             'mobile'      => $mobile,
             'verify_code'  => $verifyCode,
-            'template_id'    => $templateId,
+            'template_id'    => $template->id,
             'channel_type' => self::CHANNEL_TYPE_VERIFY,
         );
         if (empty($verifyCode)) {
@@ -402,7 +448,7 @@ class Sms extends ActiveRecord
                 } else {
                     $this->content = '您的验证码为: '. $this->verify_code;
                 }*/
-                $this->content = '您的验证码为: '. $this->verify_code;
+//                $this->content = '您的验证码为: '. $this->verify_code;
                 $this->provider = Yii::$app->sms->provider;
             }
             return true;
