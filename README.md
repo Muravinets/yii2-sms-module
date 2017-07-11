@@ -94,16 +94,16 @@ use ihacklog\sms\template\verify\General;
 use ihacklog\sms\template\verify\Login;
 
 //General template has 2 params
-Yii::$app->sms->send('18899998888', new General(), 8899, 5);
+Yii::$app->sms->send('18899998888', ['8899', '5']);
 
-Yii::$app->sms->send('18899998888', new Login(), 8899);
+Yii::$app->sms->send('18899998888', ['8899']);
 ```
 
 //switch provider and set template id:
     Yii::$app->sms
     ->setProvider('File')
     ->setTemplateId(3)
-    ->send('18899998888', new Login(), 8899);
+    ->send('18899998888', ['8899']);
 ```
 
 template available:
