@@ -385,7 +385,7 @@ class Sms extends ActiveRecord
      * @param $template \ihacklog\sms\components\BaseTemplate
      * @return bool
      */
-    public function verify($mobile, $verifyCode, $template) {
+    public function verify($mobile, $template, $verifyCode) {
         $map = array(
             'mobile'      => $mobile,
             'verify_code'  => $verifyCode,
