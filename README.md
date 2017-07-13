@@ -18,7 +18,7 @@ edit composer.json, and then add:
 
 ```json
   "require": {
-    "ihacklog/yii2-sms-module": "^1.0"
+    "ihacklog/yii2-sms-module": "^1.2"
   },
 ```
 
