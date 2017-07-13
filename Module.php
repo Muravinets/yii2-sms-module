@@ -26,6 +26,11 @@ class Module extends \yii\base\Module
     public $verifyTimeout = 300;
 
     /**
+     * @var string 测试手机号
+     */
+    public $testMobileNumber = '18800000000';
+
+    /**
      * @var bool 是否启用https证书校验
      */
     public $enableHttpsCertVerify = true;

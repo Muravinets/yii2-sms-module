@@ -192,7 +192,7 @@ class Sms extends ActiveRecord
             $errorMsg = 'failed to add sms task:' . implode(',', array_values($this->getFirstErrors()));
             return false;
         }
-        $sendRs = $this->doSend($mobile, $args, $template->id, $errorMsg);
+        $sendRs = $this->doSend($mobile, $args, $template, $errorMsg);
 
         $updateRs = $this->updateSendStatus($sendRs, $errorMsg);
         if (true == $sendRs) {
@@ -289,21 +289,23 @@ class Sms extends ActiveRecord
      * 执行短信发送
      * @param $mobile
      * @param $args
+     * @param $template \ihacklog\sms\components\BaseTemplate
      * @param $errorMsg
      * @return bool
      */
-    public function doSend($mobile, $args, $templateId, &$errorMsg)
+    public function doSend($mobile, $args, $template, &$errorMsg)
     {
         $sms = Yii::$app->sms;
-        $smsSendRs = $sms->setTemplateId($templateId)->send($mobile, $args);
+        $templateId = $template->id;
+        $smsSendRs = $sms->setTemplateId($templateId)->send($mobile, $template, $args);
         if (false == $smsSendRs) {
             $err_arr = $sms->getLastError();
             $this->addError('id', $err_arr['msg']);
             if (is_array($args)) {
                 $args = json_encode($args);
             }
-            $err_msg = 'sms_send_failed: sp:'. $sms->provider . ', to:'.  $mobile . ', templateId: '. $templateId . ', content: '. $args .
-                ', sp_error_msg: '. $err_arr['msg'];
+            $err_msg = sprintf('sms_send_failed: sp: %s, to: %s, templateId: %s, content: %s, sp_error_msg: %s',
+                $sms->provider,$mobile, $templateId, $args, $err_arr['msg']);
             $errorMsg = $err_msg;
             Yii::getLogger()->log($err_msg, 'notice', 'sms');
             return false;

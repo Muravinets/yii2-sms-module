@@ -18,4 +18,9 @@ interface ISms
      * @return mixed
      */
     public function send($mobile, $content);
+
+    /**
+     * @return bool 是否支持模板自解析
+     */
+    public function supportTemplate();
 }//end class

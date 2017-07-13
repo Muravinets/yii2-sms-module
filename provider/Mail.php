@@ -43,4 +43,8 @@ class Mail extends Component implements ISms
     public function setTemplateId() {
         return false;
     }
+
+    public function supportTemplate() {
+        return false;
+    }
 } 

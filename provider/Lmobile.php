@@ -137,4 +137,8 @@ class Lmobile extends BaseSms implements ISms
     {
         return rtrim($this->apiUrl, '/') . '/'. $function;
     }
+
+    public function supportTemplate() {
+        return false;
+    }
 }

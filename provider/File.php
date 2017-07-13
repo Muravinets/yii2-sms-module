@@ -14,17 +14,16 @@ class File extends BaseSms implements ISms
      * File where sms will be saved
      * @var string
      */
-    public $file = '@runtime/sms.log';
+    public $file = '@runtime/sms-file.log';
     /**
      * Template of the string
      * @var string
      */
-    public $template = '[{date}] {phone} {message}';
+    public $template = "[{date}]\t{phone}\t{message}\n";
 
     /**
      * @param string $phone
      * @param string $message
-     * @param string $from
      * @return bool
      */
     public function send($phone, $message)
@@ -33,10 +32,18 @@ class File extends BaseSms implements ISms
         $string = strtr($this->template, [
             '{date}' => date_create('now')->format('Y-m-d H:M:s'),
             '{phone}' => $phone,
-            '{message}' => is_array($message) ? json_encode($message) : $message,
+            '{message}' => is_array($message) ? json_encode($message, JSON_UNESCAPED_UNICODE) : $message,
         ]);
         fwrite($f, $string);
         fclose($f);
         return true;
+    }
+
+    /**
+     * we do not support template self parsing
+     * @return bool
+     */
+    public function supportTemplate() {
+        return false;
     }
 }

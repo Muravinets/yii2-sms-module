@@ -80,4 +80,8 @@ class Yuntongxun extends BaseSms implements ISms
             return false;
         }
     }
+
+    public function supportTemplate() {
+        return true;
+    }
 }

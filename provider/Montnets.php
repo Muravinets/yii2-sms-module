@@ -193,4 +193,8 @@ class Montnets extends Sms implements ISms
             return false;
         }
     }
+
+    public function supportTemplate() {
+        return false;
+    }
 }

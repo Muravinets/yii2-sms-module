@@ -249,4 +249,8 @@ class SmsCn extends Sms
         }
         return $mobileids;
     }
+
+    public function supportTemplate() {
+        return false;
+    }
 }

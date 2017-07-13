@@ -87,16 +87,23 @@ class Sms extends Component
 
     /**
      * 发送短信
+     * @param $mobile
+     * @param $template \ihacklog\sms\components\BaseTemplate
+     * @param $content
+     * @return mixed
      */
-    public function send($mobile, $content)
+    public function send($mobile, $template, $content)
     {
+        //get default provider from config
         $provider = $this->provider;
-
         if (!is_object($this->services[$provider])) {
             $this->services[$provider] = \Yii::createObject($this->services[$provider]);
         }
         if (!is_null($this->_templateId)) {
             $this->services[$provider]->setTemplateId($this->_templateId);
+        }
+        if(!$this->services[$provider]->supportTemplate()) {
+            $content = $template->parseTemplate($content);
         }
         return $this->services[$provider]->send($mobile, $content);
     }
