@@ -22,6 +22,28 @@ edit composer.json, and then add:
   },
 ```
 
+#create table
+```sql
+CREATE TABLE `sms` (
+  `id` bigint(20) NOT NULL,
+  `channel_type` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '通道类型//（1验证码通道，2 通知类短信通道）',
+  `code_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '业务类型//(0注册会员, 1密码找回, 2修改密码, 3修改手机 ...)',
+  `template_id` bigint(20) NOT NULL DEFAULT '0',
+  `mobile` varchar(16) NOT NULL DEFAULT '' COMMENT '接收方手机号',
+  `content` varchar(1024) NOT NULL DEFAULT '' COMMENT '短信内容',
+  `device_id` varchar(32) DEFAULT '' COMMENT '设备ID号//（WEB端发起的填写web）',
+  `verify_code` varchar(16) NOT NULL DEFAULT '' COMMENT '校验码内容',
+  `verify_result` tinyint(4) NOT NULL DEFAULT '0' COMMENT '短信校验结果//（0,未校验，1成功，2失败）针对校验类短信',
+  `send_status` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '发送状态//0未发送，1发送成功，2发送失败',
+  `error_msg` varchar(128) NOT NULL DEFAULT '' COMMENT '短信发送错误代码信息记录',
+  `client_ip` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '客户端IPv4 地址',
+  `provider` varchar(32) NOT NULL DEFAULT '' COMMENT '服务商名称',
+  `created_at` int(11) DEFAULT NULL COMMENT '创建时间',
+  `updated_at` int(11) DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='短信发送验证记录'
+```
+
 # config
 
 
