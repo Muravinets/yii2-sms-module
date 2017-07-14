@@ -90,17 +90,19 @@ class Netease extends BaseSms implements ISms
      * @param array $extra_params
      * @return bool 发送成功与否
      */
-    public function send_verify($mobile, $sms_content, $template_id = null, $extra_params = array())
+    public function sendVerify($mobile, $sms_content, $extra_params = array())
     {
         //先检测黑名单
         if ($this->has_blackword($mobile, $sms_content)) {
             return false;
         }
         $this->is_verify = true;
-        $url = $this->get_api_url('sendcode.action');
+        $url = $this->getApiUrl('sendcode.action');
         $data = array(
             'mobile' => $mobile,
             'deviceId' => '',
+            'templateid' => $this->templateId,
+            'codeLen' => 4,
         );
         $rs = $this->post($url, $data, $this->header_builder());
         $this->parse_json($rs);
@@ -124,7 +126,7 @@ class Netease extends BaseSms implements ISms
         return $this->is_verify ? $this->get_msg() : $this->get_obj();
     }
 
-    public function send_notice($mobile, $sms_content, $template_id = null, $extra_params = array())
+    public function sendNotice($mobile, $sms_content, $extra_params = array())
     {
         //先检测黑名单
         if ($this->has_blackword($mobile, $sms_content)) {
@@ -143,7 +145,7 @@ class Netease extends BaseSms implements ISms
         }
         $extra_params = json_encode($extra_params);
         $data = array(
-            'templateid' => $template_id,
+            'templateid' => $this->templateId,
             'mobiles' => $mobileJson,
             'params' => $extra_params,
         );

@@ -12,15 +12,32 @@ namespace ihacklog\sms;
 interface ISms
 {
     /**
-     * 发送短信
+     * 发送验证码类短信
      * @param $mobile
-     * @param $content
+     * @param $params
+     * @param $extra
      * @return mixed
      */
-    public function send($mobile, $content);
+    public function sendVerify($mobile, $params, $extra = []);
 
     /**
-     * @return bool 是否支持模板自解析
+     * 发送验证码类短信
+     * @param $mobile
+     * @param $params
+     * @param $extra
+     * @return mixed
+     */
+    public function sendNotice($mobile, $params, $extra = []);
+
+    /**
+     * 是否支持模板自解析
+     * @return bool
      */
     public function supportTemplate();
+
+    /**
+     * 短信验证码调用自己的接口校验
+     * @return bool
+     */
+    public function supportSelfVerify();
 }//end class
