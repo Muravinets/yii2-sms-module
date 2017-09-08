@@ -77,7 +77,7 @@ class BaseSms extends Component
      */
     public function isMobile($moblie)
     {
-        return  preg_match("/^0?1((3|8)[0-9]|5[0-35-9]|4[57])\d{8}$/", $moblie);
+        return  preg_match("/^0?1[3-9][0-9]\d{8}$/", $moblie);
     }
 
     protected function gbk2utf8($gbk_str)
