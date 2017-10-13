@@ -96,6 +96,7 @@ test
 use ihacklog\sms\template\alidayu\verify\Login;
 use ihacklog\sms\template\TemplateFactory;
 
+    public function testVerifySmsSend() {
         $sms = new \ihacklog\sms\models\Sms();
         $veryCode = mt_rand(1000, 9999);
         $mobile = '18812345678';
@@ -107,6 +108,7 @@ use ihacklog\sms\template\TemplateFactory;
         $verRs = $sms->verify($mobile, $loginTemplate, $veryCode);
         var_dump($verRs);
         die();
+    }
         
         
     /**
