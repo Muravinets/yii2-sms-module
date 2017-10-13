@@ -24,7 +24,7 @@ class LoginController
                 'beforeCallback' => [$this, 'loginSmsBeforeCallback'],
                 'mobile' => \Yii::$app->getRequest()->post('mobile'),
                 //此处的template要与LoginForm中的template对应
-                'template' => 'ihacklog\sms\template\verify\Login',
+                'template' => 'ihacklog\sms\template\alidayu\verify\Login',
             ],
         ];
     }

@@ -28,7 +28,7 @@ CREATE TABLE `sms` (
   `id` bigint(20) NOT NULL,
   `channel_type` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '通道类型//（1验证码通道，2 通知类短信通道）',
   `code_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '业务类型//(0注册会员, 1密码找回, 2修改密码, 3修改手机 ...)',
-  `template_id` bigint(20) NOT NULL DEFAULT '0',
+  `template_id` varchar(32) NOT NULL DEFAULT '0',
   `mobile` varchar(16) NOT NULL DEFAULT '' COMMENT '接收方手机号',
   `content` varchar(1024) NOT NULL DEFAULT '' COMMENT '短信内容',
   `device_id` varchar(32) DEFAULT '' COMMENT '设备ID号//（WEB端发起的填写web）',
@@ -93,7 +93,8 @@ CREATE TABLE `sms` (
 test
 
 ```php
-use ihacklog\sms\template\verify\Login;
+use ihacklog\sms\template\alidayu\verify\Login;
+use ihacklog\sms\template\TemplateFactory;
 
         $sms = new \ihacklog\sms\models\Sms();
         $veryCode = mt_rand(1000, 9999);
@@ -106,14 +107,31 @@ use ihacklog\sms\template\verify\Login;
         $verRs = $sms->verify($mobile, $loginTemplate, $veryCode);
         var_dump($verRs);
         die();
+        
+        
+    /**
+     * 测试通知类短信发送
+     */
+    public function testNoticeSmsSend() {
+        sleep(1);
+        $sms = new Sms();
+        $sms->getModule()->resendTimeSpan = 1;
+        $mobile = $sms->getModule()->testMobileNumber;
+        $auditTemplate = (new TemplateFactory(
+            ['provider'=> 'alidayu', 'tplName' => 'OrderNotifyProdContact', 'tplType' => 'notice']
+        ))
+            ->getTemplate();
+        $sendRs = $sms->sendNotice($mobile, $auditTemplate,'ORDER_NO_T_201710132241-' . mt_rand(1000,9999));
+        $this->assertTrue($sendRs == true);
+    }
 ```
 
 # sms component usage
 
 simple usage:
 ```php
-use ihacklog\sms\template\verify\General;
-use ihacklog\sms\template\verify\Login;
+use ihacklog\sms\template\alidayu\verify\General;
+use ihacklog\sms\template\alidayu\verify\Login;
 
 //General template has 2 params
 Yii::$app->sms->send('18899998888', ['8899', '5']);
@@ -137,23 +155,23 @@ template available:
 
 ```php
 //登录短信验证码
-use ihacklog\sms\template\verify\Login;
+use ihacklog\sms\template\alidayu\verify\Login;
 
 //重置支付密码验证码
-use ihacklog\sms\template\verify\ResetPayPwd;
+use ihacklog\sms\template\alidayu\verify\ResetPayPwd;
 
 //重置登录密码验证码
-use ihacklog\sms\template\verify\ResetLoginPwd;
+use ihacklog\sms\template\alidayu\verify\ResetLoginPwd;
 
 //企业入驻短信验证码
-use ihacklog\sms\template\verify\CompanySettleIn;
+use ihacklog\sms\template\alidayu\verify\CompanySettleIn;
 
 //更换手机号码 验证原手机号码
-use ihacklog\sms\template\verify\ChangeMobilePhoneStepOne;
+use ihacklog\sms\template\alidayu\verify\ChangeMobilePhoneStepOne;
 
 //更换手机号码 验证新手机号码
-use ihacklog\sms\template\verify\ChangeMobilePhoneStepTwo;
+use ihacklog\sms\template\alidayu\verify\ChangeMobilePhoneStepTwo;
 
 //公共验证码
-use ihacklog\sms\template\verify\General;
+use ihacklog\sms\template\alidayu\verify\General;
 ```

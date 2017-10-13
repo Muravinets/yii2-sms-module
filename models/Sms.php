@@ -14,7 +14,7 @@ use ihacklog\sms\components\traits\ModuleTrait;
  * @property integer $id
  * @property integer $channel_type 通道类型//（1验证码通道，2 通知类短信通道）
  * @property integer $code_type 业务类型
- * @property integer $template_id 模板id
+ * @property stringgit ungit $template_id 模板id
  * @property string $mobile 接收方手机号
  * @property string $content 短信内容
  * @property string $device_id 设备ID号//（WEB端发起的填写web）
@@ -88,10 +88,10 @@ class Sms extends ActiveRecord
     {
         return [
             [['mobile'], 'required'],
-            [['id', 'channel_type', 'code_type', 'template_id', 'verify_result', 'send_status', 'client_ip', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'channel_type', 'code_type', 'verify_result', 'send_status', 'client_ip', 'created_at', 'updated_at'], 'integer'],
             [['mobile', 'provider'], 'string', 'max' => 20],
             [['content'], 'string', 'max' => 1024],
-            [['device_id'], 'string', 'max' => 30],
+            [['device_id', 'template_id'], 'string', 'max' => 30],
             ['verify_code', 'validateVerifyCode'],
             [['error_msg'], 'string', 'max' => 128],
             ['template_id', 'safe'],
@@ -194,6 +194,7 @@ class Sms extends ActiveRecord
         }
         $sendRs = $this->doSend($mobile, $args, $template, $errorMsg);
 
+        $errorMsg = substr($errorMsg, 0, 128);
         $updateRs = $this->updateSendStatus($sendRs, $errorMsg);
         if (true == $sendRs) {
             return true;
@@ -297,14 +298,14 @@ class Sms extends ActiveRecord
     {
         $sms = Yii::$app->sms;
         $templateId = $template->id;
-        $smsSendRs = $sms->setTemplateId($templateId)->send($mobile, $template, $args);
+        $smsSendRs = $sms->send($mobile, $template, $args);
         if (false == $smsSendRs) {
             $err_arr = $sms->getLastError();
             $this->addError('id', $err_arr['msg']);
             if (is_array($args)) {
                 $args = json_encode($args);
             }
-            $err_msg = sprintf('sms_send_failed: sp: %s, to: %s, templateId: %s, content: %s, sp_error_msg: %s',
+            $err_msg = sprintf('sp: %s, to: %s, templateId: %s, content: %s, sp_error_msg: %s',
                 $sms->provider,$mobile, $templateId, $args, $err_arr['msg']);
             $errorMsg = $err_msg;
             Yii::getLogger()->log($err_msg, 'notice', 'sms');

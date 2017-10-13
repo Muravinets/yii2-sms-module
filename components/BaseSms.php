@@ -22,19 +22,19 @@ class BaseSms extends Component
 
     public $password = null;
 
-    public $templateId = null;
+    public $template = null;
 
     protected $_error = [];
 
 
-    public function setTemplateId($templateId = null)
+    public function setTemplate($template = null)
     {
-        $this->templateId = $templateId;
+        $this->template = $template;
         return $this;
     }
 
-    public function getTemplateId() {
-        return $this->templateId;
+    public function getTemplate() {
+        return $this->template;
     }
 
 

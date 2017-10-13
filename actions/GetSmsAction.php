@@ -14,19 +14,19 @@ use yii\base\Action;
 use yii\base\InvalidParamException;
 use ihacklog\sms\models\Sms;
 //登录短信验证码
-use ihacklog\sms\template\verify\Login;
+use ihacklog\sms\template\alidayu\verify\Login;
 //重置支付密码验证码
-use ihacklog\sms\template\verify\ResetPayPwd;
+use ihacklog\sms\template\alidayu\verify\ResetPayPwd;
 //重置登录密码验证码
-use ihacklog\sms\template\verify\ResetLoginPwd;
+use ihacklog\sms\template\alidayu\verify\ResetLoginPwd;
 //企业入驻短信验证码
-use ihacklog\sms\template\verify\CompanySettleIn;
+use ihacklog\sms\template\alidayu\verify\CompanySettleIn;
 //更换手机号码 验证原手机号码
-use ihacklog\sms\template\verify\ChangeMobilePhoneStepOne;
+use ihacklog\sms\template\alidayu\verify\ChangeMobilePhoneStepOne;
 //更换手机号码 验证新手机号码
-use ihacklog\sms\template\verify\ChangeMobilePhoneStepTwo;
+use ihacklog\sms\template\alidayu\verify\ChangeMobilePhoneStepTwo;
 //公共验证码
-use ihacklog\sms\template\verify\General;
+use ihacklog\sms\template\alidayu\verify\General;
 
 class GetSmsAction extends Action
 {
@@ -100,7 +100,7 @@ class GetSmsAction extends Action
         if ($this->channel_type == Sms::CHANNEL_TYPE_VERIFY) {
             //@TODO 根据不同的业务类型，自动获取相应服务商不同的短信模板id
             //fixup General 验证码模板有两个参数
-            if ($this->template instanceof \ihacklog\sms\template\verify\General) {
+            if ($this->template instanceof \ihacklog\sms\template\alidayu\verify\General) {
                 $sendRs = $sms->sendVerify($this->mobile, $this->template, mt_rand(1000, 9999), 5);
             } else {
                 $sendRs = $sms->sendVerify($this->mobile, $this->template, mt_rand(1000, 9999));

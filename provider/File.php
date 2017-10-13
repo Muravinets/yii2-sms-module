@@ -19,7 +19,7 @@ class File extends BaseSms implements ISms
      * Template of the string
      * @var string
      */
-    public $template = "[{date}]\t{phone}\t{message}\n";
+    public $simpleTemplate = "[{date}]\t{phone}\t{message}\n";
 
     /**
      * @param string $phone
@@ -29,7 +29,7 @@ class File extends BaseSms implements ISms
     public function send($phone, $message)
     {
         $f = fopen(\Yii::getAlias($this->file), 'a+');
-        $string = strtr($this->template, [
+        $string = strtr($this->simpleTemplate, [
             '{date}' => date_create('now')->format('Y-m-d H:M:s'),
             '{phone}' => $phone,
             '{message}' => is_array($message) ? json_encode($message, JSON_UNESCAPED_UNICODE) : $message,

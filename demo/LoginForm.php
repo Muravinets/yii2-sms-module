@@ -25,7 +25,7 @@ class LoginForm extends Model
         return [
             // username and password are both required
             [['mobile'], 'required'],
-            ['sms_verify_code', SmsValidator::className(), 'template' => 'ihacklog\sms\template\verify\Login', 'mobileNumberAttribute' => 'mobile'],
+            ['sms_verify_code', SmsValidator::className(), 'template' => 'ihacklog\sms\template\alidayu\verify\Login', 'mobileNumberAttribute' => 'mobile'],
         ];
     }
 

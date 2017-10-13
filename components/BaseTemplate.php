@@ -48,7 +48,7 @@ class BaseTemplate extends Component
 
     public function getReplacement()
     {
-        for($i=0; $i< $this->varNum; $i++) {
+        for ($i=0; $i< $this->varNum; $i++) {
             $this->argsPlaceHolder[] = $this->getParamPlaceHolder();
         }
         return $this->argsPlaceHolder;

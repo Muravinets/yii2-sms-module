@@ -9,11 +9,11 @@
  * Date: 7/11/17
  * Time: 3:11 PM
  */
-namespace ihacklog\sms\template\notice;
+namespace ihacklog\sms\template\yuntongxun\notice;
 
-use ihacklog\sms\components\BaseTemplate;
+use ihacklog\sms\template\yuntongxun\YuntongxunTemplate;
 
-class AdminAuditPass extends BaseTemplate
+class AdminAuditPass extends YuntongxunTemplate
 {
     public $varNum = 2;
     public $id = '177674';

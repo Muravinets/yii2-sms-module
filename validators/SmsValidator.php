@@ -24,19 +24,19 @@ use Yii;
 use yii\validators\Validator;
 use ihacklog\sms\models\Sms;
 //登录短信验证码
-use ihacklog\sms\template\verify\Login;
+use ihacklog\sms\template\alidayu\verify\Login;
 //重置支付密码验证码
-use ihacklog\sms\template\verify\ResetPayPwd;
+use ihacklog\sms\template\alidayu\verify\ResetPayPwd;
 //重置登录密码验证码
-use ihacklog\sms\template\verify\ResetLoginPwd;
+use ihacklog\sms\template\alidayu\verify\ResetLoginPwd;
 //企业入驻短信验证码
-use ihacklog\sms\template\verify\CompanySettleIn;
+use ihacklog\sms\template\alidayu\verify\CompanySettleIn;
 //更换手机号码 验证原手机号码
-use ihacklog\sms\template\verify\ChangeMobilePhoneStepOne;
+use ihacklog\sms\template\alidayu\verify\ChangeMobilePhoneStepOne;
 //更换手机号码 验证新手机号码
-use ihacklog\sms\template\verify\ChangeMobilePhoneStepTwo;
+use ihacklog\sms\template\alidayu\verify\ChangeMobilePhoneStepTwo;
 //公共验证码
-use ihacklog\sms\template\verify\General;
+use ihacklog\sms\template\alidayu\verify\General;
 
 class SmsValidator extends Validator
 {

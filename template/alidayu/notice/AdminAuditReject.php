@@ -9,14 +9,14 @@
  * Date: 7/11/17
  * Time: 3:11 PM
  */
-namespace ihacklog\sms\template\notice;
+namespace ihacklog\sms\template\alidayu\notice;
 
-use ihacklog\sms\components\BaseTemplate;
+use ihacklog\sms\template\alidayu\AlidayuTemplate;
 
-class AdminAuditReject extends BaseTemplate
+class AdminAuditReject extends AlidayuTemplate
 {
     public $varNum = 3;
-    public $id = '177675';
+    public $id = 'SMS_104710011';
     public $type = 'notice';
-    public $template = '您提交的{1}的{2}申请未通过审核，拒绝原因：{3}。';
+    public $template = '您提交的${para1}的${para2}申请未通过审核，拒绝原因：${para3}。';
 }

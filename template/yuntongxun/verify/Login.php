@@ -8,11 +8,11 @@
  * Time: 5:07 PM
  */
 
-namespace ihacklog\sms\template\verify;
+namespace ihacklog\sms\template\yuntongxun\verify;
 
-use ihacklog\sms\components\BaseTemplate;
+use ihacklog\sms\template\yuntongxun\YuntongxunTemplate;
 
-class Login extends BaseTemplate
+class Login extends YuntongxunTemplate
 {
     public $varNum = 1;
     public $id = '177552';

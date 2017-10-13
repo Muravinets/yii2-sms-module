@@ -52,7 +52,7 @@ class Sms extends Component
 
     public $verifyTemplateId = 1;
 
-    protected $_templateId = null;
+    protected $_template = null;
 
     public function init() {
         if (count($this->services) == 0) {
@@ -67,16 +67,16 @@ class Sms extends Component
         $this->provider = $provider;
     }
 
-    public function setTemplateId($templateId)
+    public function setTemplate($template)
     {
-        $this->_templateId = $templateId;
+        $this->_template = $template;
         return $this;
     }
 
-    public function getTemplateId()
+    public function getTemplate()
     {
         $provider = $this->provider;
-        return $this->services[$provider]->getTemplateId();
+        return $this->services[$provider]->getTemplate();
     }
 
     public function setProvider($provider)
@@ -99,9 +99,7 @@ class Sms extends Component
         if (!is_object($this->services[$provider])) {
             $this->services[$provider] = \Yii::createObject($this->services[$provider]);
         }
-        if (!is_null($this->_templateId)) {
-            $this->services[$provider]->setTemplateId($this->_templateId);
-        }
+        $this->services[$provider]->setTemplate($template);
         if(!$this->services[$provider]->supportTemplate()) {
             $content = $template->parseTemplate($content);
         }
