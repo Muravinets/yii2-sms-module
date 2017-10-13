@@ -139,6 +139,7 @@ Yii::$app->sms->send('18899998888', ['8899', '5']);
 Yii::$app->sms->send('18899998888', ['8899']);
 ```
 
+```php
 //switch provider and set template id:
     Yii::$app->sms
     ->setProvider('File')
@@ -147,6 +148,7 @@ Yii::$app->sms->send('18899998888', ['8899']);
 ```
 
 template available:
+```
 验证码类：
 
 一般只有一个参数， 参数：1 验证码
