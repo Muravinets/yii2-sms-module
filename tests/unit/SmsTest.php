@@ -4,11 +4,12 @@ namespace tests\codeception\common\unit;
 use Yii;
 use Codeception\Specify;
 use yii\codeception\TestCase as Yii2TestCase;
-use ihacklog\sms\template\notice\AdminAuditPass;
-use ihacklog\sms\template\notice\AdminAuditReject;
+use ihacklog\sms\template\alidayu\notice\AdminAuditPass;
+use ihacklog\sms\template\alidayu\notice\AdminAuditReject;
 use ihacklog\sms\models\Sms;
-use ihacklog\sms\template\verify\Login;
+use ihacklog\sms\template\alidayu\verify\Login;
 use ihacklog\sms\demo\LoginForm;
+use ihacklog\sms\template\TemplateFactory;
 
 class SmsTest extends Yii2TestCase
 {
@@ -77,9 +78,11 @@ class SmsTest extends Yii2TestCase
         $sms = new Sms();
         $sms->getModule()->resendTimeSpan = 1;
         $mobile = $sms->getModule()->testMobileNumber;
-        $auditTemplate = new AdminAuditReject();
-        $sendRs = $sms->sendNotice($mobile, $auditTemplate,
-            'super-man科技有限公司', '银行卡6228480********' . mt_rand(1000, 9999) . '审核', '资料不全');
+        $auditTemplate = (new TemplateFactory(
+            ['provider'=> 'alidayu', 'tplName' => 'OrderNotifyProdContact', 'tplType' => 'notice']
+        ))
+            ->getTemplate();
+        $sendRs = $sms->sendNotice($mobile, $auditTemplate,'ORDER_NO_T_201710132241-' . mt_rand(1000,9999));
         $this->assertTrue($sendRs == true);
     }
 

@@ -14,7 +14,7 @@ use ihacklog\sms\components\traits\ModuleTrait;
  * @property integer $id
  * @property integer $channel_type 通道类型//（1验证码通道，2 通知类短信通道）
  * @property integer $code_type 业务类型
- * @property stringgit ungit $template_id 模板id
+ * @property string $template_id 模板id
  * @property string $mobile 接收方手机号
  * @property string $content 短信内容
  * @property string $device_id 设备ID号//（WEB端发起的填写web）
