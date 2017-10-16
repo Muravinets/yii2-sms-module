@@ -14,7 +14,7 @@ use yii\base\Exception;
 
 class TemplateFactory extends Component
 {
-    public $provider = 'alidayu';
+    public $provider = '';
 
     public $tplType = 'verify';
 
@@ -29,6 +29,7 @@ class TemplateFactory extends Component
      */
     public function getTemplate()
     {
+        $this->provider = empty($this->provider) ? Yii::$app->sms->provider : $this->provider;
         $templatePath = __DIR__  . '/' . $this->provider . '/' . $this->tplType . '/' . $this->tplName . '.php';
         $templateFullDomainClass = 'ihacklog\sms\template'. '\\' . $this->provider . '\\' . $this->tplType . '\\' . $this->tplName;
         $tplPathHash = md5($templateFullDomainClass);
