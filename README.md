@@ -125,10 +125,19 @@ use ihacklog\sms\template\TemplateFactory;
         $sms = new Sms();
         $sms->getModule()->resendTimeSpan = 1;
         $mobile = $sms->getModule()->testMobileNumber;
-        $auditTemplate = (new TemplateFactory(
-            ['provider'=> 'alidayu', 'tplName' => 'OrderNotifyProdContact', 'tplType' => 'notice']
-        ))
+        //get template
+        $auditTemplate = (new TemplateFactory([
+            'provider'=> 'alidayu', 
+            'tplName' => 'OrderNotifyProdContact', 
+            'tplType' => 'notice'
+            ]))
             ->getTemplate();
+        //or you can use this
+/*        $auditTemplate = (new TemplateFactory())
+            ->setProvider('alidayu')
+            ->setTplName('OrderNotifyProdContact')
+            ->setTplType('notice')
+            ->getTemplate();*/
         $sendRs = $sms->sendNotice($mobile, $auditTemplate,'ORDER_NO_T_201710132241-' . mt_rand(1000,9999));
         $this->assertTrue($sendRs == true);
     }
