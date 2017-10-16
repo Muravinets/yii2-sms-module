@@ -60,6 +60,7 @@ CREATE TABLE `sms` (
             'singleIpSendLimit' => YII_ENV_PROD ? 20 : 0, //单个ip在限定的时间内允许发送的最多次数
             'verifyTimeout' => 300, //验证码超时(秒)
             'enableHttpsCertVerify' => YII_ENV_PROD ? true : false, //是否校验https证书,线上环境建议启用
+            'testMobileNumber' => '12399996666', //自动化测试短信功能时使用的手机号
         ],
 ```
 
@@ -68,18 +69,23 @@ CREATE TABLE `sms` (
     'components' => [
         'sms' => [
             'class' => 'ihacklog\sms\Sms',
-            'provider' => 'Yuntongxun', //set default provider
+            'provider' => YII_ENV_PROD ? 'Alidayu' : 'File', //set default provider
             'services' => [
                 //see http://www.yuntongxun.com/member/main
                 'Yuntongxun' => [
                     'class' => 'ihacklog\sms\provider\Yuntongxun',
                     'apiUrl' => 'https://app.cloopen.com:8883',
                     //'apiUrl' => 'https://sandboxapp.cloopen.com:8883',
-                    'templateId' => 1,
                     'appId' => 'AppID',
                     'accountSid' => 'ACCOUNT SID',
                     'accountToken' => 'AUTH TOKEN',
                     'softVersion' => '2013-12-26',
+                ],
+                'Alidayu' => [
+                    'class' => 'ihacklog\sms\provider\Alidayu',
+                    'signName' => '公司签名',
+                    'accessKeyId' => 'this-is-accessKeyId',
+                    'accessKeySecret' => 'this-is-accessKeySecret'
                 ],
                 'File' => [
                     'class' => 'ihacklog\sms\provider\File',
@@ -102,7 +108,7 @@ use ihacklog\sms\template\TemplateFactory;
         $mobile = '18812345678';
         $loginTemplate = new Login();
         $sendRs = $sms->sendVerify($mobile, $loginTemplate, $veryCode);
-        //        var_dump($sms->getErrors());die();
+        //var_dump($sms->getErrors());die();
         var_dump($sendRs);
         //验证
         $verRs = $sms->verify($mobile, $loginTemplate, $veryCode);
@@ -145,7 +151,6 @@ Yii::$app->sms->send('18899998888', ['8899']);
 //switch provider and set template id:
     Yii::$app->sms
     ->setProvider('File')
-    ->setTemplateId(3)
     ->send('18899998888', ['8899']);
 ```
 
