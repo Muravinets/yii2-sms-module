@@ -101,9 +101,10 @@ test
 ```php
 use ihacklog\sms\template\alidayu\verify\Login;
 use ihacklog\sms\template\TemplateFactory;
+use ihacklog\sms\models\Sms;
 
     public function testVerifySmsSend() {
-        $sms = new \ihacklog\sms\models\Sms();
+        $sms = new Sms();
         $veryCode = mt_rand(1000, 9999);
         $mobile = '18812345678';
         $loginTemplate = new Login();
@@ -127,14 +128,14 @@ use ihacklog\sms\template\TemplateFactory;
         $mobile = $sms->getModule()->testMobileNumber;
         //get template
         $auditTemplate = (new TemplateFactory([
-            'provider'=> 'alidayu', 
+            //'provider'=> 'alidayu', 
             'tplName' => 'OrderNotifyProdContact', 
             'tplType' => 'notice'
             ]))
             ->getTemplate();
         //or you can use this
 /*        $auditTemplate = (new TemplateFactory())
-            ->setProvider('alidayu')
+            //->setProvider('alidayu')
             ->setTplName('OrderNotifyProdContact')
             ->setTplType('notice')
             ->getTemplate();*/
