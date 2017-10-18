@@ -128,14 +128,14 @@ use ihacklog\sms\models\Sms;
         $mobile = $sms->getModule()->testMobileNumber;
         //get template
         $auditTemplate = (new TemplateFactory([
-            'provider'=> 'alidayu', 
+            //'provider'=> 'alidayu', 
             'tplName' => 'OrderNotifyProdContact', 
             'tplType' => 'notice'
             ]))
             ->getTemplate();
         //or you can use this
 /*        $auditTemplate = (new TemplateFactory())
-            ->setProvider('alidayu')
+            //->setProvider('alidayu')
             ->setTplName('OrderNotifyProdContact')
             ->setTplType('notice')
             ->getTemplate();*/
