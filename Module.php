@@ -31,6 +31,11 @@ class Module extends \yii\base\Module
     public $testMobileNumber = '18800000000';
 
     /**
+     * @var string 测试时固定验证码数字
+     */
+    public $testFixedCode = '';
+
+    /**
      * @var bool 是否启用https证书校验
      */
     public $enableHttpsCertVerify = true;
