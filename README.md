@@ -61,6 +61,7 @@ CREATE TABLE `sms` (
             'verifyTimeout' => 300, //验证码超时(秒)
             'enableHttpsCertVerify' => YII_ENV_PROD ? true : false, //是否校验https证书,线上环境建议启用
             'testMobileNumber' => '12399996666', //自动化测试短信功能时使用的手机号
+            'testFixedCode' => YII_ENV_PROD ? '' : '8888', //开发和测试环境使用固定的验证码
         ],
 ```
 
