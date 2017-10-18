@@ -13,6 +13,7 @@ use Yii;
 use yii\base\Action;
 use yii\base\InvalidParamException;
 use ihacklog\sms\models\Sms;
+use ihacklog\sms\template\TemplateFactory;
 //登录短信验证码
 use ihacklog\sms\template\alidayu\verify\Login;
 //重置支付密码验证码
@@ -68,6 +69,8 @@ class GetSmsAction extends Action
 
     public $template = null;
 
+    public $templateType = null;
+
     protected function formatResponse($status, $message = '', $url = '', $data = [])
     {
         return ['status' => $status, 'message' => $message, 'url' => $url, 'data' => $data];
@@ -82,7 +85,16 @@ class GetSmsAction extends Action
             throw new \ErrorException('template can not be null!');
         }
         if (is_string($this->template)) {
-            $this->template = Yii::createObject($this->template);
+            //full namespace
+            if (strpos($this->template, '\\') > 0) {
+                $this->template = Yii::createObject($this->template);
+            } else {
+                //just name and type
+                $this->template = (new TemplateFactory())
+                    ->setTplType($this->templateType)
+                    ->setTplName($this->template)
+                    ->getTemplate();
+            }
         }
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $sms = new Sms();
@@ -100,7 +112,7 @@ class GetSmsAction extends Action
         if ($this->channel_type == Sms::CHANNEL_TYPE_VERIFY) {
             //@TODO 根据不同的业务类型，自动获取相应服务商不同的短信模板id
             //fixup General 验证码模板有两个参数
-            if ($this->template instanceof \ihacklog\sms\template\alidayu\verify\General) {
+            if ($this->template->varNum == 2) {
                 $sendRs = $sms->sendVerify($this->mobile, $this->template, mt_rand(1000, 9999), 5);
             } else {
                 $sendRs = $sms->sendVerify($this->mobile, $this->template, mt_rand(1000, 9999));

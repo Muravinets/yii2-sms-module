@@ -14,7 +14,7 @@ use ihacklog\sms\template\alidayu\AlidayuTemplate;
 
 class General extends AlidayuTemplate
 {
-    public $varNum = 2;
+    public $varNum = 1;
     public $id = 'SMS_104720008';
     public $type = 'verify';
     public $template = '您的验证码为${para1}，请于5分钟内正确输入，如非本人操作，请忽略此短信。';
