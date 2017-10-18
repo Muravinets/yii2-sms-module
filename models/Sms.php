@@ -350,7 +350,11 @@ class Sms extends ActiveRecord
             throw new \ErrorException('error args. first param of args must be verifyCode!');
         }
         $fixedCode = $this->getModule()->testFixedCode;
-        $verifyCode = !empty($fixedCode) ? $fixedCode : $verifyCode;
+        if (!empty($fixedCode)) {
+            $verifyCode = $fixedCode;
+            //override the code
+            $args[0] = $verifyCode;
+        }
         $rs = self::send($mobile, $args, $verifyCode, $template, $errorMsg);
         return $rs;
     }
