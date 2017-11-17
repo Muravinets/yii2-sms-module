@@ -389,63 +389,34 @@ class Sms extends ActiveRecord
     }
 
     /**
-     * Returns the actual name of a given table name.
-     * This method will strip off curly brackets from the given table name
-     * and replace the percentage character '%' with [[Connection::tablePrefix]].
-     * @param string $name the table name to be converted
-     * @return string the real name of the given table name
-     */
-    protected function getRawTableName($name)
-    {
-        if (strpos($name, '{{') !== false) {
-            $name = preg_replace('/\\{\\{(.*?)\\}\\}/', '\1', $name);
-
-            return str_replace('%', \Yii::$app->db->tablePrefix, $name);
-        } else {
-            return $name;
-        }
-    }
-
-
-    /**
      * @param $mobile
      * @param $verifyCode
      * @param $template \ihacklog\sms\components\BaseTemplate
      * @return bool
      */
     public function verify($mobile, $template, $verifyCode) {
+        $map = array(
+            'mobile'      => $mobile,
+            'verify_code'  => $verifyCode,
+            'template_id'    => $template->id,
+            'channel_type' => self::CHANNEL_TYPE_VERIFY,
+        );
         if (empty($verifyCode)) {
             return false;
         }
         //有效时间
         $timeout           = $this->getModule()->verifyTimeout ? $this->getModule()->verifyTimeout : 60*5;
         $startOffset       = time() - $timeout;
-        //fix duplicate code problem
-        $found = Yii::$app->db->createCommand('SELECT s.* FROM '. $this->getRawTableName(static::tableName()) .' AS s '.
-        'LEFT JOIN '. $this->getRawTableName(static::tableName()) .' s2 ON '.
-            's.channel_type = s2.channel_type AND s.code_type = s2.code_type AND s.template_id = s2.template_id AND s.mobile = s2.mobile '.
-        'AND s.created_at >= s2.created_at '.
-        'WHERE s2.created_at > :start_off_ts '.
-        'AND s.mobile=:mobile '.
-        'AND s.verify_code=:verify_code '.
-        'AND s.template_id=:template_id '.
-        'AND s.channel_type=:channel_type '.
-        'AND s.send_status = 1')
-            ->bindValue(':start_off_ts', $startOffset)
-            ->bindValue(':mobile', $mobile)
-            ->bindValue(':verify_code', $verifyCode)
-            ->bindValue(':template_id', $template->id)
-            ->bindValue(':channel_type', self::CHANNEL_TYPE_VERIFY)
-            ->queryOne(\PDO::FETCH_OBJ);
+        $found  = static::find()->where($map)->andWhere(['>', 'created_at', $startOffset])->one();
         if ($found) {
-            $sms = static::findOne($found->id);
-            if ($sms->verify_result == self::VERIFY_RESULT_SUCC) {
+            $id = $found->id;
+            if ($found->verify_result == self::VERIFY_RESULT_SUCC) {
                 $this->addError('id', '您的验证码已经被验证过！');
                 return false;
             }
-            $sms->verify_result = self::VERIFY_RESULT_SUCC;
-            $sms->updated_at = time();
-            return $sms->save(false);
+            $found->verify_result = self::VERIFY_RESULT_SUCC;
+            $found->updated_at = time();
+            return $found->save(false);
         } else {
             $this->addError('id', '没有找到匹配的验证码！');
             return false;
