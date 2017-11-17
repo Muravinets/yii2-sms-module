@@ -407,7 +407,11 @@ class Sms extends ActiveRecord
         //有效时间
         $timeout           = $this->getModule()->verifyTimeout ? $this->getModule()->verifyTimeout : 60*5;
         $startOffset       = time() - $timeout;
-        $found  = static::find()->where($map)->andWhere(['>', 'created_at', $startOffset])->one();
+        //fix duplicate code problem.
+        $found  = static::find()->where($map)->andWhere(['>', 'created_at', $startOffset])
+            ->orderBy('created_at DESC')
+//            ->createCommand()->getRawSql();
+            ->one();
         if ($found) {
             $id = $found->id;
             if ($found->verify_result == self::VERIFY_RESULT_SUCC) {
