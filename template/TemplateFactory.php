@@ -46,4 +46,14 @@ class TemplateFactory extends Component
         }
         return $t;
     }
+
+    public function setTplName($name) {
+        $this->tplName = $name;
+        return $this;
+    }
+
+    public function setTplType($type) {
+        $this->tplType = $type;
+        return $this;
+    }
 }
