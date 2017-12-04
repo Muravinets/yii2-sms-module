@@ -31,7 +31,7 @@ class TemplateFactory extends Component
     {
         //@TODO detect Yii::$app->sms->provider more effectively
         $this->provider = empty($this->provider) ? Yii::$app->sms->provider : $this->provider;
-        $templatePath = __DIR__  . '/' . strtoupper($this->provider) . '/' . $this->tplType . '/' . $this->tplName . '.php';
+        $templatePath = __DIR__  . '/' . strtolower($this->provider) . '/' . $this->tplType . '/' . $this->tplName . '.php';
         $templateFullDomainClass = 'ihacklog\sms\template'. '\\' . $this->provider . '\\' . $this->tplType . '\\' . $this->tplName;
         $tplPathHash = md5($templateFullDomainClass);
         if (!is_file($templatePath)) {
