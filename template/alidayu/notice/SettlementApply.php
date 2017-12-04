@@ -21,5 +21,5 @@ class SettlementApply extends AlidayuTemplate
     public $varNum = 7;
     public $id = 'SMS_110470030';
     public $type = 'notice';
-    public $template = '您好，{para1}申请结算{para2}元，请及时处理。产品：{para3}，订单号：{para4}，出发日期：{para5}，出游人数：{para6}人';
+    public $template = '您好，${para1}申请结算${para2}元，请及时处理。产品：${para3}，订单号：${para4}，出发日期：${para5}，出游人数：${para6}人';
 }
