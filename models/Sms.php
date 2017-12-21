@@ -166,22 +166,24 @@ class Sms extends ActiveRecord
     public function send($mobile, $args, $veriyCode = '', $template, &$errorMsg)
     {
         $module = $this->getModule();
-        //防恶意请求
-        if ($module->resendTimeSpan) {
-            if ($this->countByTime($mobile, $module->resendTimeSpan) > 0) {
-                $errorMsg = sprintf('在 %d s 内发送过于频繁!', $module->resendTimeSpan);
-                $this->addError('id', $errorMsg);
-                return false;
+        //防恶意请求,通知类不做处理
+        if (!empty($veriyCode)) {
+            if ($module->resendTimeSpan) {
+                if ($this->countByTime($mobile, $module->resendTimeSpan) > 0) {
+                    $errorMsg = sprintf('在 %d s 内发送过于频繁!', $module->resendTimeSpan);
+                    $this->addError('id', $errorMsg);
+                    return false;
+                }
             }
-        }
-        if ($module->singleIpTimeSpan) {
-            if ($this->countByIp(sprintf("%u", ip2long(Yii::$app->getRequest()->getUserIP())), $module->singleIpTimeSpan)
-                > $module->singleIpSendLimit) {
-                $errorMsg = sprintf('IP: %s 在 %d s 内发送过于频繁!',
-                    $module->singleIpTimeSpan,
-                    Yii::$app->getRequest()->getUserIP());
-                $this->addError('id', $errorMsg);
-                return false;
+            if ($module->singleIpTimeSpan) {
+                if ($this->countByIp(sprintf("%u", ip2long(Yii::$app->getRequest()->getUserIP())), $module->singleIpTimeSpan)
+                    > $module->singleIpSendLimit) {
+                    $errorMsg = sprintf('IP: %s 在 %d s 内发送过于频繁!',
+                        $module->singleIpTimeSpan,
+                        Yii::$app->getRequest()->getUserIP());
+                    $this->addError('id', $errorMsg);
+                    return false;
+                }
             }
         }
         //插入发送记录到库中
