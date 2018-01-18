@@ -15,8 +15,8 @@ use ihacklog\sms\template\alidayu\AlidayuTemplate;
 
 class AdminAuditReject extends AlidayuTemplate
 {
-    public $varNum = 3;
-    public $id = 'SMS_104710011';
+    public $varNum = 2;
+    public $id = 'SMS_122290503';
     public $type = 'notice';
-    public $template = '您提交的${para1}的${para2}申请未通过审核，拒绝原因：${para3}。';
+    public $template = '尊敬的用户您好，您的企业${para1}入驻申请已被拒绝，拒绝原因：${para2}，请重新填写资料再次申请，给您造成的不便敬请谅解，谢谢合作。';
 }
